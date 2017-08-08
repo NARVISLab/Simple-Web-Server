@@ -106,7 +106,7 @@ namespace SimpleWeb {
       bool in_use = false;
       bool attempt_reconnect = true;
 
-      std::unique_ptr<asio::deadline_timer> timer;
+      std::unique_ptr<asio::steady_timer> timer;
 
       void set_timeout(long seconds = 0) noexcept {
         if(seconds == 0)
@@ -115,8 +115,8 @@ namespace SimpleWeb {
           timer = nullptr;
           return;
         }
-        timer = std::unique_ptr<asio::deadline_timer>(new asio::deadline_timer(socket->get_io_service()));
-        timer->expires_from_now(boost::posix_time::seconds(seconds));
+        timer = std::unique_ptr<asio::steady_timer>(new asio::steady_timer(socket->get_io_service()));
+        timer->expires_from_now(std::chrono(seconds));
         auto self = this->shared_from_this();
         timer->async_wait([self](const error_code &ec) {
           if(!ec) {
